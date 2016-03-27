@@ -107,15 +107,15 @@ reg [9:0] rotary;
 always@(posedge clk)begin
 	if(reset) rotary<=0;
 	else if(rotary_event && rotary_right && rotary < 60)//(640-16-32)/10
-		rotary <= rotary+1;//Åýcount¶]§¹¤@¦¸¶g´Á¤¤¡A«Gªº®É¶¡¤ñ¨ÒÅÜªø
+		rotary <= rotary+1;//è®“countè·‘å®Œä¸€æ¬¡é€±æœŸä¸­ï¼Œäº®çš„æ™‚é–“æ¯”ä¾‹è®Šé•·
 	else if(rotary_event && !rotary_right && rotary>0)
 		rotary <= rotary-1;
 	else rotary <= rotary;
 end
 //----------------------------------------------------------------------------------------------------------------------
-//±±¨î11­Ótp¤U¸¨ªº®É¶¡
+//æŽ§åˆ¶11å€‹tpä¸‹è½çš„æ™‚é–“
 reg [20:0] tp_time;
-reg [20:0]tp_cnt;//°£ÀW
+reg [20:0]tp_cnt;//é™¤é »
 reg tp_start_to_fall;
 always@(posedge clk)begin
 	if(reset) tp_start_to_fall<=0;
@@ -127,26 +127,26 @@ always@(posedge clk)begin
 		tp_time<=0; end
 	else if(tp_start_to_fall) begin
 		if(SW3) begin tp_cnt <= tp_cnt; tp_time <= tp_time; end// pause
-		else if(tp_cnt == 500000)begin//³]¦¨500000->0.01sec
+		else if(tp_cnt == 500000)begin//è¨­æˆ500000->0.01sec
 			tp_cnt<=0;
 			tp_time <= tp_time+1;end
 		else 
 			tp_cnt <= tp_cnt + 1;
 	end
 end
-// µegp ¼L¤Ú·|°Êªº¤pºëÆF
+// ç•«gp å˜´å·´æœƒå‹•çš„å°ç²¾éˆ
 wire gp_pattern[0:31][0:31];
 `include "gp_pattern.dat"
 wire gp_pattern2[0:31][0:31];
 `include "gp_pattern2.dat"
 wire gp_on;
-reg [9:0]gp_x, gp_y;//gp¥ª¤Wªº°Ñ¦ÒÂI
+reg [9:0]gp_x, gp_y;//gpå·¦ä¸Šçš„åƒè€ƒé»ž
 reg mouth;
 reg [30:0]mouth_cnt;
 always@(posedge clk) begin
 	if(reset)begin mouth<=0; mouth_cnt<=0;end
 	else 
-		if(mouth_cnt == 5000000)begin//°£ÀW 5000000->0.1sec
+		if(mouth_cnt == 5000000)begin//é™¤é » 5000000->0.1sec
 			mouth_cnt<=0;
 			mouth<=!mouth;end
 		else mouth_cnt <= mouth_cnt + 1;
@@ -158,16 +158,16 @@ assign gp_on = mouth ?
 
 
 always@(posedge clk) begin
-	gp_x<=0 + (rotary*10); //*10 §ï§ï§ï <<3
+	gp_x<=0 + (rotary*10); //*10 æ”¹æ”¹æ”¹ <<3
 	gp_y<=480-32;
 end
-//µecircle
+//ç•«circle
 wire circle_pattern[0:19][0:19];
 `include "circle_pattern.dat"
-//µetriangle
+//ç•«triangle
 wire triangle_pattern[0:19][0:19];
 `include "triangle_pattern.dat"
-//µesquare
+//ç•«square
 wire square_pattern[0:19][0:19];
 `include "square_pattern.dat"
 
@@ -186,31 +186,6 @@ always@(posedge clk)begin
 	end
 end
 
-//*bullet §ï§ï§ï
-`include "bullet.dat"
-reg shot; 
-wire bullet_on;
-reg used;
-reg [10:0] bullet_x,bullet_y;
-reg [20:0]time_out;
-
-assign bullet_on = (pixel_x>=bullet_x && pixel_x<=bullet_x+5 && pixel_y>=bullet_y && pixel_y<=bullet_y+5 && bullet[pixel_x-bullet_x][pixel_y-bullet_y]);
-
-always@(posedge clk) begin//north_btn
-	if(reset)begin
-		bullet_x<=0; bullet_y<=500; used<=0;end
-	else begin
-		if(!used && btn_n)begin
-			bullet_x <= gp_x;
-			bullet_y <= 480+5;
-			used<=1; 
-			time_out <= tp_time; end
-		if(used)begin
-			if(shot) bullet_y<=500;  //§ï§ï§ï
-			else bullet_y <= bullet_y-(tp_time-time_out);end
-	end
-end//*/
-
 //tp t0~10
 `include "c0.dat"//1 
 `include "t1.dat"//100
@@ -224,7 +199,7 @@ end//*/
 `include "s9.dat"//s9 830
 `include "t10.dat"//t10 900 
 
-//µestatus board ³Ñ¤U´X­Ótp­n±¼¸¨
+//ç•«status board å‰©ä¸‹å¹¾å€‹tpè¦æŽ‰è½
 `include "zero.dat"
 `include "one.dat"
 `include "two.dat"
@@ -253,14 +228,14 @@ assign eleven_on=(remain_tp==11 && (pixel_x>=550 && pixel_x<590) && (pixel_y>=50
 
 wire status_on;//40*40
 assign status_on = ((pixel_x>=550 && pixel_x<=590) && (pixel_y>=50 && pixel_y<=90))?1:0;
-always@(posedge clk) begin //ºâ³Ñ¤Uªº¼Æ¶q
+always@(posedge clk) begin //ç®—å‰©ä¸‹çš„æ•¸é‡
 	if(reset)begin remain_tp<=11;end
 	else begin
 		if(tp_time==1||tp_time==200||tp_time==250||tp_time==350||tp_time==400||tp_time==550||tp_time==600||tp_time==750||tp_time==870||tp_time==950||tp_time==1100)
 			remain_tp <= remain_tp-1;
 	end
 end
-//§PÂ_gp¬O§_¦³¦Y¨ìtp
+//åˆ¤æ–·gpæ˜¯å¦æœ‰åƒåˆ°tp
 reg [4:0] total_got;
 reg [4:0] circle_got;
 reg [4:0] square_got;
@@ -283,7 +258,7 @@ always@(posedge clk)begin
 	end
 end
 
-//Final score board ¤À§OÅã¥Ü¦³´X­Ó¦³´X­Ó¤T¨¤§Î¶ê§Î¥¿¤è§Î §ï§ï§ï
+//Final score board åˆ†åˆ¥é¡¯ç¤ºæœ‰å¹¾å€‹æœ‰å¹¾å€‹ä¸‰è§’å½¢åœ“å½¢æ­£æ–¹å½¢ æ”¹æ”¹æ”¹
 wire final_on;//40*40
 assign final_on = (tp_time>=1100+480 && (pixel_x>=100 && pixel_x<=400) && (pixel_y>=150 && pixel_y<=400) && !circle_pattern[pixel_x-150][pixel_y-200] && !triangle_pattern[pixel_x-150][pixel_y-260] && !square_pattern[pixel_x-150][pixel_y-310]);
 wire score_c_on;//40*40 (200,180)
@@ -331,12 +306,12 @@ always@(posedge clk)begin
 		b_on <= gp_on || status_on || t1_on || s6_on || t5_on || s9_on || t4_on || c7_on ;end
 end
 //score_t_on || score_s_on || score_c_on || 
-//current_rgb Åã¥Ü xx_on 
+//current_rgb é¡¯ç¤º xx_on 
 assign current_rgb[0] = r_on;
 assign current_rgb[1] = g_on;
 assign current_rgb[2] = b_on;
 
-//ledÅã¥Ü±o¤À
+//ledé¡¯ç¤ºå¾—åˆ†
 always@(posedge clk)begin
 	if(reset) led <= 8'd0;
 	else led <= total_got;//total_got
