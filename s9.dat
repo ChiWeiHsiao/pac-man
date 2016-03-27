@@ -1,0 +1,19 @@
+//draw square s9
+wire s9_on;
+reg [9:0]s9_x, s9_y;
+reg s9_touched;
+assign s9_on = (!s9_touched && (pixel_x>=s9_x && pixel_x<=s9_x+20) && (pixel_y>=s9_y && pixel_y<=s9_y+20) && square_pattern[pixel_x-s9_x][pixel_y-s9_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) s9_touched<=0;
+	else if((s9_x>=gp_x-20 && s9_x<=gp_x+32) && gp_y==s9_y) s9_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		s9_x<=150;
+		s9_y<=-50; end
+	else if(tp_time < 950) s9_y <= -50;
+	else if(tp_time >= 950 && tp_time<=950+480) s9_y <= tp_time-950;
+	else s9_y <= 500;
+end

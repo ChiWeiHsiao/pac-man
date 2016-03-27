@@ -1,0 +1,19 @@
+//draw square s8
+wire s8_on;
+reg [9:0]s8_x, s8_y;
+reg s8_touched;
+assign s8_on = (!s8_touched && (pixel_x>=s8_x && pixel_x<=s8_x+20) && (pixel_y>=s8_y && pixel_y<=s8_y+20) && square_pattern[pixel_x-s8_x][pixel_y-s8_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) s8_touched<=0;
+	else if((s8_x>=gp_x-20 && s8_x<=gp_x+32) && gp_y==s8_y) s8_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		s8_x<=300;
+		s8_y<=-50; end
+	else if(tp_time < 870) s8_y <= -50;
+	else if(tp_time >= 870 && tp_time<=870+480) s8_y <= tp_time-870;
+	else s8_y <= 500;
+end

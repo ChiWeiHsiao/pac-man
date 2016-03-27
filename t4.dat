@@ -1,0 +1,19 @@
+//draw triangle t4
+wire t4_on;
+reg [9:0]t4_x, t4_y;
+reg t4_touched;
+assign t4_on = (!t4_touched && (pixel_x>=t4_x && pixel_x<=t4_x+20) && (pixel_y>=t4_y && pixel_y<=t4_y+20) && triangle_pattern[pixel_x-t4_x][pixel_y-t4_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) t4_touched<=0;
+	else if((t4_x>=gp_x-20 && t4_x<=gp_x+32) && gp_y==t4_y) t4_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		t4_x<=350;
+		t4_y<=-50; end
+	else if(tp_time < 400) t4_y <= -50;
+	else if(tp_time >= 400 && tp_time<=400+480) t4_y <= tp_time-400;
+	else t4_y <= 500;//500
+end

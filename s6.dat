@@ -1,0 +1,19 @@
+//draw square s6
+wire s6_on;
+reg [9:0]s6_x, s6_y;
+reg s6_touched;
+assign s6_on = (!s6_touched && (pixel_x>=s6_x && pixel_x<=s6_x+20) && (pixel_y>=s6_y && pixel_y<=s6_y+20) && square_pattern[pixel_x-s6_x][pixel_y-s6_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) s6_touched<=0;
+	else if((s6_x>=gp_x-20 && s6_x<=gp_x+32) && gp_y==s6_y) s6_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		s6_x<=250;
+		s6_y<=-50; end
+	else if(tp_time < 600) s6_y <= -50;
+	else if(tp_time >= 600 && tp_time<=600+480) s6_y <= tp_time-600;
+	else s6_y <= 500;
+end

@@ -1,0 +1,19 @@
+//draw square s3
+wire s3_on;
+reg [9:0]s3_x, s3_y;
+reg s3_touched;
+assign s3_on = (!s3_touched && (pixel_x>=s3_x && pixel_x<=s3_x+20) && (pixel_y>=s3_y && pixel_y<=s3_y+20) && square_pattern[pixel_x-s3_x][pixel_y-s3_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) s3_touched<=0;
+	else if((s3_x>=gp_x-20 && s3_x<=gp_x+32) && gp_y==s3_y) s3_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		s3_x<=200;
+		s3_y<=-50; end
+	else if(tp_time < 350) s3_y <= -50;
+	else if(tp_time >= 350 && tp_time<=350+480) s3_y <= tp_time-350;
+	else s3_y <= 500;
+end

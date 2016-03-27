@@ -1,0 +1,19 @@
+//draw circle c7
+wire c7_on;
+reg [9:0]c7_x, c7_y;
+reg c7_touched;
+assign c7_on = (!c7_touched && (pixel_x>=c7_x && pixel_x<=c7_x+20) && (pixel_y>=c7_y && pixel_y<=c7_y+20) && circle_pattern[pixel_x-c7_x][pixel_y-c7_y])?1:0;
+
+always@(posedge clk) begin
+	if(reset) c7_touched<=0;
+	else if((c7_x>=gp_x-20 && c7_x<=gp_x+32) && gp_y==c7_y) c7_touched<=1;
+end
+
+always@(posedge clk) begin
+	if(reset)begin
+		c7_x<=450;
+		c7_y<=-50; end
+	else if(tp_time < 750) c7_y <= -50;
+	else if(tp_time >=750  && tp_time<=750+480) c7_y <= tp_time-750;
+	else c7_y <= 500;
+end
